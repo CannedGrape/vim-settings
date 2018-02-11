@@ -1,0 +1,35 @@
+# always
+snippet al_
+always @(posedge clks or posedge reset)
+begin
+	if (reset == 1'd1) begin
+		${1:TODO} <= ${2}'d0;
+	end
+end
+endsnippet
+# if
+snippet if_
+if (${1:TODO}) begin
+	${2:TODO};
+end
+endsnippet
+# else if
+snippet elif_
+else if (${1:TODO}) begin
+	${2:TODO};
+end
+endsnippet
+# else
+snippet el_
+else begin
+	${1:TODO};
+end
+endsnippet
+# case
+snippet ca_
+case (${1:TODO})
+	${1:TODO}  : ;
+	default : ;
+endcase
+endsnippet
+
