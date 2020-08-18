@@ -12,6 +12,9 @@ winpos 20 20
 set lines=30 columns=130
 
 " > > > > > > 文件类型侦测
+set directory^=$HOME/.vim/tmp//
+let $TMPDIR=$HOME."/tmp"
+
 " 开启文件类型侦测
 filetype on
 
@@ -77,7 +80,7 @@ nmap <Leader>M %
 set incsearch
 
 " 搜索时大小写不敏感
-set ignorecase
+"set ignorecase
 
 " 关闭兼容模式
 set nocompatible
@@ -124,7 +127,7 @@ call vundle#begin()
 
     " 标签
     "   gtags 需要安装 gtags，查找引用依赖 pip3 install pygments
-    Plugin 'vim-scripts/gtags.vim'
+    "Plugin 'vim-scripts/gtags.vim'
     Plugin 'majutsushi/tagbar'
     "Plugin 'vim-scripts/indexer.tar.gz'
     Plugin 'alvan/vim-indexer'
@@ -150,7 +153,11 @@ call vundle#begin()
     Plugin 'jlanzarotta/bufexplorer'
 
     " 模板
+    " ultisnips需要Python支持，可以用vim-snipmate替代
     Plugin 'SirVer/ultisnips'
+    "Plugin 'MarcWeber/vim-addon-wm-utils'
+    "Plugin 'tomtom/tlib_vim'
+    "Plugin 'garbas/vim-snipmate'
     Plugin 'honza/vim-snippets'
 
     " Undo
@@ -166,6 +173,7 @@ call vundle#begin()
     Plugin 'derekwyatt/vim-protodef'
     "           - Verilog, SystemVerilog
     Plugin 'vhda/verilog_systemverilog.vim'
+    Plugin 'vim-scripts/automatic.vim'
     "           - bash
     Plugin 'vim-scripts/bash-support.vim'
     "           - markdown
@@ -357,8 +365,8 @@ nmap <Leader>C :ClangFormatAutoToggle<CR>
 " < < < < < <
 
 " > > > > > > 标签列表
-" 设置 tagbar 子窗口的位置出现在主编辑区的左边
-let tagbar_left=1
+" 设置 tagbar 子窗口的位置出现在主编辑区的右边
+let tagbar_left=0
 " 设置显示／隐藏标签列表子窗口的快捷键。速记：identifier list by tag
 "nnoremap <Leader>ilt :TagbarToggle<CR>
 nmap <F8> :TagbarToggle<CR>
@@ -476,6 +484,11 @@ let g:tagbar_type_systemverilog = {
 \ }
 " < < < < < <
 
+" > > > > > > IDE
+"nmap <F10> :SrcExplToggle<CR>
+nmap <F10> :TrinityToggleSourceExplorer<CR>
+" < < < < < <
+
 " > > > > > > 代码导航
 " 1. 基于标签的代码导航
 " 设置插件 indexer 调用 ctags 的参数
@@ -495,12 +508,41 @@ nmap <Leader>tp :tprevious<CR>
 " nnoremap <leader>jd :YcmCompleter GoToDefinition<CR>
 " < < < < < <
 
-let g:ale_lint_on_enter = 0
+" > > > > > > Lint
+let g:ale_enable=0
+let g:ale_lint_on_text_change='never'
+let g:ale_lint_on_insert_leave=0
+let g:ale_lint_on_enter=0
+let g:ale_lint_on_save=1
+
+nnoremap <F9> :ALEToggle<CR>
+
+nmap <silent> <A-9> <Plug>(ale_previous_wrap)
+nmap <silent> <A-0> <Plug>(ale_next_wrap)
+" < < < < < <
 
 " > > > > > > 查找
 " 使用 ctrlsf.vim 插件在工程内全局查找光标所在关键字。快捷键速记：Search in Project/File
 nnoremap <Leader>sp :CtrlSF<CR>
 nnoremap <Leader>sf :CtrlSF<CR>
+nnoremap <F5> :CtrlSFToggle<CR>
+
+" LeaderF
+let g:Lf_HideHelp=1
+let g:Lf_IgnoreCurrentBufferName=1
+let g:Lf_WindowPosition="popup"
+let g:Lf_PreviewInPopup=1
+
+let g:Lf_ShortcutF="<Leader>ff"
+
+nnoremap <Leader>fb :<C-U><C-R>=printf("Leaderf buffer %s", "")<CR><CR>
+nnoremap <Leader>fm :<C-U><C-R>=printf("Leaderf mru %s", "")<CR><CR>
+nnoremap <Leader>ft :<C-U><C-R>=printf("Leaderf bufTag %s", "")<CR><CR>
+nnoremap <Leader>fl :<C-U><C-R>=printf("Leaderf line %s", "")<CR><CR>
+
+" easymotion
+map <Leader>fc <Plug>(easymotion-bd-f)
+nmap <Leader>fc <Plug>(easymotion-overwin-f)
 
 " Grep
 nnoremap <silent> <F3> :Grep -r <CR>
@@ -551,7 +593,7 @@ nnoremap <silent> <F7> :%s/<C-v><C-M>//g<CR>:w<CR>gg
 " 模板补全
 " UltiSnips 的路径
 "let g:UltiSnipsSnippetDirectories=["mysnippets"]
-" UltiSnips 的 tab 键与 YCM 冲突，重新设定
+" UltiSnips 的 tab 键与 YCM 冲突，如果使用 YCM 则需重新设定
 let g:UltiSnipsExpandTrigger="<tab>"
 let g:UltiSnipsJumpForwardTrigger="<tab>"
 let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
@@ -611,7 +653,8 @@ nmap <Leader>man :Man 3 <cword><CR>
 " > > > > > > 工程文件浏览
 " 使用 NERDTree 插件查看工程文件。设置快捷键，速记：file list
 "nmap <Leader>fl :NERDTreeToggle<CR>
-nmap <F4> :NERDTreeToggle<CR>
+"nmap <F4> :NERDTreeToggle<CR>
+nnoremap <silent> <F4> :NERDTreeToggle<CR>
 
 " 设置 NERDTree 子窗口宽度
 let NERDTreeWinSize=22
@@ -628,6 +671,9 @@ let NERDTreeShowHidden=1
 " 删除文件时自动删除文件对应 buffer
 let NERDTreeAutoDeleteBuffer=1
 " < < < < < <
+
+" RTL Tree
+nnoremap <S-F4> :RtlTree<CR>
 
 " > > > > > > 多Tab
 nnoremap <A-1> :tabnew<CR>
@@ -674,6 +720,8 @@ let g:wildfire_objects = ["i'", 'i"', "i)", "i]", "i}", "i>", "ip"]
 let b:match_words = '\<begin\>:\<end\>,'
 	                \ . '\<module\>:\<endmodule\>,'
 	                \ . '\<case\>:\<endcase\>,'
+	                \ . '\<casex\>:\<endcase\>,'
+	                \ . '\<casez\>:\<endcase\>,'
 	                \ . '\<generate\>:\<endgenerate\>'
 " < < < < < <
 
